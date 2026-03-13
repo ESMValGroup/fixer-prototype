@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["readme", "version"]
+dependencies = ["cf_xarray", "fixer", "fixer-cmip7", "numpy", "pint", "xarray"]
+description = "A package for making ESA CCI data analysis ready."
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+name = "fixer-esa-cci"
+requires-python = ">=3.12"
+
+[project.entry-points.'fixer.plugins']
+esa_cci = "fixer_esa_cci:fixer"
+
+[project.optional-dependencies]
+test = [
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "cftime",     # TODO: update tests to use a numpy array instead.
+]
+
+[tool.setuptools]
+packages = ["fixer_esa_cci"]
+
+[tool.setuptools.dynamic]
+readme = { file = "README.md", content-type = "text/markdown" }
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
+
+# Configure tests
+
+[tool.pytest.ini_options]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+minversion = "6"
+testpaths = ["fixer_esa_cci/tests"]
+xfail_strict = true
+
+[tool.coverage.run]
+parallel = true
+source = ["fixer_esa_cci"]
+
+[tool.coverage.report]
+exclude_lines = ["if __name__ == .__main__.:", "if TYPE_CHECKING:"]

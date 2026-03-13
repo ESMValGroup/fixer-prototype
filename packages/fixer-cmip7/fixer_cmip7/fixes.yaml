@@ -1,0 +1,4 @@
+MIP-DRS7.CMIP7.CMIP.CCCma.CanESM6-MR.historical.r2i1p1f1.glb.mon.tas.tavg-h2m-hxy-u.g13s.v20250622:
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: tas_tavg-h2m-hxy-u

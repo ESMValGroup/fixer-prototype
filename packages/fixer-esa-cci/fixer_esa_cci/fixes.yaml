@@ -1,0 +1,4 @@
+example-dataset:
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: tas_tavg-h2m-hxy-u

@@ -1,0 +1,17 @@
+line-length = 79
+target-version = "py312"
+[lint]
+select = ["ALL"]
+ignore = [
+    "FIX002", # Allow TODOs while the code is still in development.
+    "TD",     # Allow TODOs while the code is still in development.
+]
+future-annotations = true
+[lint.per-file-ignores]
+"**/tests/**.py" = [
+    "D",    # Disable docstring checks for tests code.
+    "S101", # Use of assert in tests code is required.
+    "T20",  # Printing things can help with debugging tests.
+]
+[lint.pydocstyle]
+convention = "numpy"
