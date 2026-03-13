@@ -32,7 +32,6 @@ repos:
       - id: mypy
         additional_dependencies:
           - "types-PyYAML"
-          - "types-requests"
           - "numpy"
   - repo: https://github.com/codespell-project/codespell
     rev: "v2.4.1"
