@@ -1,8 +1,6 @@
 """Test some stuff."""
 
 # ruff: noqa: T201
-import iris
-import iris.loading
 import xarray as xr
 from fixer import fix
 
@@ -22,6 +20,12 @@ def main() -> None:
     print("Result:\n", result)
     print("Saving to NetCDF..")
     result.to_netcdf("tas_fixed.nc")
+
+    try:
+        import iris
+        import iris.loading
+    except ImportError:
+        return
 
     cube = iris.load_cube("tas_fixed.nc")
     print(cube.summary())

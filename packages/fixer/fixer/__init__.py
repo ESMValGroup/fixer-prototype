@@ -5,7 +5,7 @@ from __future__ import annotations
 import importlib
 from typing import TYPE_CHECKING
 
-from importlib_metadata import entry_points
+from importlib.metadata import entry_points
 
 if TYPE_CHECKING:
     import xarray as xr
