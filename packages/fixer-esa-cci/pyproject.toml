@@ -15,12 +15,7 @@ requires-python = ">=3.12"
 esa_cci = "fixer_esa_cci:fixer"
 
 [project.optional-dependencies]
-test = [
-    "pre-commit",
-    "pytest",
-    "pytest-cov",
-    "cftime",     # TODO: update tests to use a numpy array instead.
-]
+test = ["pre-commit", "pytest", "pytest-cov", "netcdf4", "dask"]
 
 [tool.setuptools]
 packages = ["fixer_esa_cci"]

@@ -22,8 +22,8 @@ def main() -> None:
     result.to_netcdf("tas_fixed.nc")
 
     try:
-        import iris
-        import iris.loading
+        import iris  # noqa: PLC0415
+        import iris.loading  # noqa: PLC0415
     except ImportError:
         return
 

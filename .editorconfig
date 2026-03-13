@@ -1,0 +1,3 @@
+# 2 space indentation
+[*.{yml}]
+indent_size = 2

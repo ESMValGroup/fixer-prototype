@@ -439,7 +439,8 @@ dependencies = [
 
 [package.optional-dependencies]
 test = [
-    { name = "cftime" },
+    { name = "dask" },
+    { name = "netcdf4" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -448,9 +449,10 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "cf-xarray" },
-    { name = "cftime", marker = "extra == 'test'" },
+    { name = "dask", marker = "extra == 'test'" },
     { name = "fixer", editable = "packages/fixer" },
     { name = "fixer-cmip7", editable = "packages/fixer-cmip7" },
+    { name = "netcdf4", marker = "extra == 'test'" },
     { name = "numpy" },
     { name = "pint" },
     { name = "pre-commit", marker = "extra == 'test'" },
@@ -476,9 +478,6 @@ dev = [
     { name = "pre-commit" },
     { name = "scitools-iris" },
 ]
-test = [
-    { name = "pytest" },
-]
 
 [package.metadata]
 requires-dist = [
@@ -488,10 +487,9 @@ requires-dist = [
     { name = "fixer-esa-cci", editable = "packages/fixer-esa-cci" },
     { name = "netcdf4", marker = "extra == 'dev'" },
     { name = "pre-commit", marker = "extra == 'dev'" },
-    { name = "pytest", marker = "extra == 'test'" },
     { name = "scitools-iris", marker = "extra == 'dev'" },
 ]
-provides-extras = ["test", "dev"]
+provides-extras = ["dev"]
 
 [[package]]
 name = "flexcache"

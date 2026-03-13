@@ -11,6 +11,14 @@ A prototype demonstrating how to implement configurable fixes
 
 ## Example usage
 
+There is an example script, [`demo.py`](demo.py), that demonstrates how to use the `fix` function to fix a dataset. The script can be run with the following command:
+
+```bash
+uv run --extra dev demo.py
+```
+
+Below is an example using Ipython:
+
 ```python
 In [1]: import xarray as xr
 
@@ -20,10 +28,10 @@ In [3]: ds = xr.open_dataset(
    ...:     "~/climate_data/CMIP6/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc",
    ...:     chunks={"time": 100},
    ...: )
-   ...: 
+   ...:
 
 In [4]: ds
-Out[4]: 
+Out[4]:
 <xarray.Dataset> Size: 65MB
 Dimensions:    (time: 1980, bnds: 2, lat: 64, lon: 128)
 Coordinates:
@@ -56,10 +64,10 @@ In [5]: result = fix(
    ...:     ds,
    ...:     name="MIP-DRS7.CMIP7.CMIP.CCCma.CanESM6-MR.historical.r2i1p1f1.glb.mon.tas.tavg-h2m-hxy-u.g13s.v20250622",
    ...: )
-   ...: 
+   ...:
 
 In [6]: result
-Out[6]: 
+Out[6]:
 <xarray.Dataset> Size: 65MB
 Dimensions:    (time: 1980, lat: 64, lon: 128, bnds: 2)
 Coordinates:
@@ -73,4 +81,3 @@ Data variables:
     time_bnds  (time, bnds) object 32kB dask.array<chunksize=(100, 2), meta=np.ndarray>
     lat_bnds   (lat, bnds) float64 1kB dask.array<chunksize=(64, 2), meta=np.ndarray>
     lon_bnds   (lon, bnds) float64 2kB dask.array<chunksize=(128, 2), meta=np.ndarray>
-

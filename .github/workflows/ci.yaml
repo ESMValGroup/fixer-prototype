@@ -1,0 +1,36 @@
+name: Test
+permissions: {}
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    test:
+        name: python
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7.5.0
+
+            - name: Set up Python
+              run: uv python install
+
+            - name: Lint
+              run: uv run --extra dev pre-commit run -a
+
+            - name: Test
+              run: |
+                  uv run --directory packages/fixer --extra test pytest
+                  uv run --directory packages/fixer-cmip7 --extra test pytest
+                  uv run --directory packages/fixer-esa-cci --extra test pytest
+
+            - name: Run the example script
+              run: uv run --extra dev demo.py

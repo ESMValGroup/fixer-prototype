@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import cftime
 import numpy as np
 import pint.errors
@@ -20,11 +18,8 @@ from fixer.fixes import (
 )
 from fixer.protocol import FixFunction
 
-if TYPE_CHECKING:
-    from pathlib import Path
 
-
-def test_reformat(tmp_path: Path) -> None:
+def test_reformat() -> None:
     """Test the reformat function on a small synthetic dataset."""
     assert isinstance(set_units, FixFunction)
     ds = xr.Dataset.from_dict(
@@ -230,9 +225,6 @@ def test_reformat(tmp_path: Path) -> None:
     )
     assert result is not ds
     print("Result:\n", result)
-    print("Saving to NetCDF..")
-    file = tmp_path / "tas_fixed.nc"
-    result.to_netcdf(file)
 
     # Perform some checks on the results
     assert result.sizes == {"time": 1, "lat": 2, "lon": 3, "bnds": 2}
@@ -248,17 +240,6 @@ def test_reformat(tmp_path: Path) -> None:
     assert result.tas.dtype == np.dtype("float32")
     assert result.lat.dtype == np.dtype("float64")
     assert result.lat_bnds.dtype == np.dtype("float64")
-    try:
-        import iris  # noqa: PLC0415
-        import iris.loading  # noqa: PLC0415
-    except ImportError:
-        pass
-    else:
-        cube = iris.load_cube(file)
-        print(cube.summary())
-        for problem in iris.loading.LOAD_PROBLEMS.problems:
-            print(problem)
-        assert not iris.loading.LOAD_PROBLEMS.problems
 
 
 @pytest.mark.parametrize(

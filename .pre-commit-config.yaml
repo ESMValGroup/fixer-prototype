@@ -34,10 +34,6 @@ repos:
           - "types-PyYAML"
           - "types-requests"
           - "numpy"
-  - repo: https://github.com/adrienverge/yamllint
-    rev: "v1.38.0"
-    hooks:
-      - id: yamllint
   - repo: https://github.com/codespell-project/codespell
     rev: "v2.4.1"
     hooks:
