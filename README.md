@@ -3,6 +3,8 @@ A prototype demonstrating how to implement configurable fixes
 
 ## Layout
 
+For demonstration purposes, this repository contains three Python packages, but the idea would be that these would live in separate repositories later on:
+
 - [packages/fixer](packages/fixer) The package that users will import. It provides a single function `fix` that takes an xarray dataset
   and the dataset name and returns a correctly standardized dataset based on the available configuration. It also provides the infrastructure
   needed by plugins and widely applicable functions for fixing data in [`fixer.fixes`](packages/fixer/fixer/fixes.py).
