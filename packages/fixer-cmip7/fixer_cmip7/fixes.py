@@ -94,7 +94,25 @@ def reformat(
     dim_map: dict[str, str] | None = None,
     variable_map: dict[str, str] | None = None,
 ) -> xr.Dataset:
-    """Reformat a dataset using the definition from the CMIP7 CMOR tables."""
+    """Reformat a dataset using the definition from the CMIP7 CMOR tables.
+
+    Parameters
+    ----------
+    ds:
+        The dataset to reformat.
+    realm:
+        The CMIP7 realm.
+    branded_variable:
+        The branded variable name.
+    dim_map:
+        A mapping of dimension names to rename.
+    variable_map:
+        A mapping of variable names to rename.
+
+    Returns
+    -------
+    :     The reformatted dataset.
+    """
     table_dir = Path(__file__).parent / "cmip7-cmor-tables" / "tables"
     return CMIP7Variable.from_cmor_table(
         path=table_dir,
