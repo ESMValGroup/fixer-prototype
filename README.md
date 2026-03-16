@@ -9,7 +9,7 @@ For demonstration purposes, this repository contains three Python packages, but 
   and the dataset name and returns a correctly standardized dataset based on the available configuration. It also provides the infrastructure
   needed by plugins and widely applicable functions for fixing data in [`fixer.fixes`](packages/fixer/fixer/fixes.py).
 - [packages/fixer-cmip7](packages/fixer-cmip7) A plugin that can be used to format CMIP7 data according to the standards set out in the CMIP7 data request.
-- [packages/fixer-esa-cci](packages/fixer-esa-cci) A plugin that can be used to format ESA-CCI data according to the standards set out in the CMIP7 data request.
+- [packages/fixer-esa-cci](packages/fixer-esa-cci) A plugin that can be used to format [ESA-CCI data](https://xcube.readthedocs.io/en/latest/dataaccess.html#esa-climate-data-centre-esa-cci-cciodp-ccizarr-esa-cci-kc) according to the standards set out in the CMIP7 data request.
 
 ## Example usage
 
