@@ -307,9 +307,26 @@ def flip_coordinate(ds: xr.Dataset, name: str) -> xr.Dataset:
         A copy of the original dataset, with the specified coordinate variable
         flipped.
     """
-    ds = ds.copy()
     coord = ds[name]
-    coord.data = np.flip(coord.data)
+    dims = coord.dims
+    if len(dims) != 1:
+        msg = (
+            f"Unable to flip coordinate '{name}' with {len(dims)} dimensions."
+        )
+        raise NotImplementedError(msg)
+    dim = dims[0]
+    reverse = slice(None, None, -1)
+    ds = ds.isel({dim: reverse})
     if "bounds" in coord.attrs and coord.attrs["bounds"] in ds:
-        ds = flip_coordinate(ds, name=coord.attrs["bounds"])
+        bounds = ds[coord.attrs["bounds"]]
+        bounds_dims = set(bounds.dims) - {dim}
+        if len(bounds_dims) != 1:
+            msg = (
+                f"Coordinate {name} should have exactly 1 bounds dimension, "
+                f"but dimensions {', '.join(sorted(bounds_dims))} were found."
+            )
+            raise ValueError(msg)
+        bounds_dim = bounds_dims.pop()
+        ds[coord.attrs["bounds"]] = bounds.isel({bounds_dim: reverse})
+
     return ds

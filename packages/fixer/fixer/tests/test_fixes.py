@@ -313,7 +313,7 @@ def test_flip_coordinate() -> None:
         {
             "coords": {
                 "lat": {
-                    "dims": ("y",),
+                    "dims": ("lat",),
                     "attrs": {
                         "bounds": "lat_bounds",
                         "units": "degrees_north",
@@ -324,7 +324,7 @@ def test_flip_coordinate() -> None:
                     ],
                 },
                 "lon": {
-                    "dims": ("x",),
+                    "dims": ("lon",),
                     "attrs": {
                         "bounds": "lon_bounds",
                         "units": "degrees_east",
@@ -337,10 +337,10 @@ def test_flip_coordinate() -> None:
                 },
             },
             "attrs": {},
-            "dims": {"bnds": 2, "y": 2, "x": 3},
+            "dims": {"bnds": 2, "lat": 2, "lon": 3},
             "data_vars": {
                 "lat_bounds": {
-                    "dims": ("y", "bnds"),
+                    "dims": ("lat", "bnds"),
                     "attrs": {},
                     "data": [
                         [-90.0, -88.0],
@@ -348,12 +348,23 @@ def test_flip_coordinate() -> None:
                     ],
                 },
                 "lon_bounds": {
-                    "dims": ("x", "bnds"),
+                    "dims": ("lon", "bnds"),
                     "attrs": {},
                     "data": [
                         [-1.0, 1.0],
                         [1.0, 3.0],
                         [3.0, 5.0],
+                    ],
+                },
+                "tas": {
+                    "dims": ("lat", "lon"),
+                    "attrs": {
+                        "standard_name": "air_temperature",
+                        "units": "K",
+                    },
+                    "data": [
+                        [290.0, 291.0, 292.0],
+                        [293.0, 294.0, 295.0],
                     ],
                 },
             },
@@ -392,5 +403,12 @@ def test_flip_coordinate() -> None:
             [-1.0, 1.0],
             [1.0, 3.0],
             [3.0, 5.0],
+        ],
+    )
+    np.testing.assert_array_equal(
+        result.tas.values,
+        [
+            [293.0, 294.0, 295.0],
+            [290.0, 291.0, 292.0],
         ],
     )

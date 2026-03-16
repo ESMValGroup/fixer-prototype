@@ -6,3 +6,5 @@
       bnds: nv
     variable_map:
       prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
