@@ -330,3 +330,44 @@ def flip_coordinate(ds: xr.Dataset, name: str) -> xr.Dataset:
         ds[coord.attrs["bounds"]] = bounds.isel({bounds_dim: reverse})
 
     return ds
+
+
+def merge_dims(
+    ds: xr.Dataset,
+    dims: Iterable[str],
+) -> xr.Dataset:
+    """Merge two or more dimensions in a dataset.
+
+    Parameters
+    ----------
+    ds:
+        The original dataset.
+    dims:
+        The names of the dimensions to merge. The first dimension in the list
+        will be kept.
+
+    Returns
+    -------
+    :
+        A copy of the original dataset, with the specified dimensions merged.
+    """
+    ds = ds.copy()
+    dims = tuple(dims)
+    sizes = [ds.sizes[dim] for dim in dims]
+    if any(size != sizes[0] for size in sizes):
+        msg = (
+            f"Unable to merge dimensions {', '.join(dims)} with different "
+            f"sizes: {', '.join(f'{dim}={ds.sizes[dim]}' for dim in dims)}."
+        )
+        raise ValueError(msg)
+
+    target_dim = dims[0]
+    for dim in dims[1:]:
+        for var in ds.data_vars:
+            if dim in ds[var].dims:
+                ds[var] = ds[var].rename({dim: target_dim})
+        for coord in ds.coords:
+            if dim in ds[coord].dims:
+                ds[coord] = ds[coord].rename({dim: target_dim})
+
+    return ds

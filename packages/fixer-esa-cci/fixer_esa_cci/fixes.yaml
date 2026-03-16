@@ -1,9 +1,89 @@
-"ESACCI-WATERVAPOUR-L3C-TCWV-meris-005deg-2002-2017-fv3.2.zarr":
+ESACCI-WATERVAPOUR-L3C-TCWV-meris-005deg-2002-2017-fv3.2.zarr:
   - function: fixer_cmip7.fixes.reformat
     realm: atmos
     branded_variable: prw_tavg-u-hxy-u
     dim_map:
       bnds: nv
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+ESACCI-WATERVAPOUR-L3C-TCWV-meris-005deg-200207-201712-fv3.2-kr1.1:
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    dim_map:
+      bnds: nv
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+ESACCI-WATERVAPOUR-L3C-TCWV-meris-005deg-20020701-20171231-fv3.2-kr1.1:
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    dim_map:
+      bnds: nv
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+ESACCI-WATERVAPOUR-L3C-TCWV-meris-05deg-200207-201712-fv3.2-kr1.1:
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    dim_map:
+      bnds: nv
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+ESACCI-WATERVAPOUR-L3C-TCWV-meris-05deg-20020701-20171231-fv3.2-kr1.1:
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    dim_map:
+      bnds: nv
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+esacci.WATERVAPOUR.day.L3S.TCWV.multi-sensor.multi-platform.TCWV_land_005deg.3-2.r1:
+  - function: fixer.fixes.merge_dims
+    dims: [bnds, nv]
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+esacci.WATERVAPOUR.day.L3S.TCWV.multi-sensor.multi-platform.TCWV_land_05deg.3-2.r1:
+  - function: fixer.fixes.merge_dims
+    dims: [bnds, nv]
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+esacci.WATERVAPOUR.mon.L3S.TCWV.multi-sensor.multi-platform.TCWV_land_005deg.3-2.r1:
+  - function: fixer.fixes.merge_dims
+    dims: [bnds, nv]
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
+    variable_map:
+      prw: tcwv
+  - function: fixer.fixes.flip_coordinate
+    name: lat
+esacci.WATERVAPOUR.mon.L3S.TCWV.multi-sensor.multi-platform.TCWV_land_05deg.3-2.r1:
+  - function: fixer.fixes.merge_dims
+    dims: [bnds, nv]
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: prw_tavg-u-hxy-u
     variable_map:
       prw: tcwv
   - function: fixer.fixes.flip_coordinate
