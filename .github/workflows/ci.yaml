@@ -16,6 +16,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Lint
+        uses: j178/prek-action@79f765515bd648eb4d6bb1b17277b7cb22cb6468 # v2.0.0
 
       - name: Install uv
         uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7.5.0
@@ -23,11 +25,13 @@ jobs:
       - name: Set up Python
         run: uv python install
 
-      - name: Lint
-        run: uv tool run pre-commit run -a
-
       - name: Test
         run: |
           uv run --directory packages/fixer --extra test pytest
           uv run --directory packages/fixer-cmip7 --extra test pytest
           uv run --directory packages/fixer-esa-cci --extra test pytest
+
+      - name: Run demo scripts
+        run: |
+          uv run --extra dev demo_scan.py
+          uv run --extra dev demo_fix.py
