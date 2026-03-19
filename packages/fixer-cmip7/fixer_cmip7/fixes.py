@@ -142,12 +142,14 @@ class CMIP7Variable(Variable):
         )
 
 
-def reformat(
+def reformat(  # noqa: PLR0913
     ds: xr.Dataset,
     realm: str,
     branded_variable: str,
     dim_map: dict[str, str] | None = None,
     variable_map: dict[str, str] | None = None,
+    *,
+    keep_global_attrs: bool = False,
 ) -> xr.Dataset:
     """Reformat a dataset using the definition from the CMIP7 CMOR tables.
 
@@ -163,6 +165,8 @@ def reformat(
         A mapping of dimension names to rename.
     variable_map:
         A mapping of variable names to rename.
+    keep_global_attrs:
+        Whether to keep the global attributes.
 
     Returns
     -------
@@ -172,4 +176,9 @@ def reformat(
     return CMIP7Variable.from_cmor_table(
         table_id=realm,
         entry=branded_variable,
-    ).to_dataset(ds, dim_map=dim_map, variable_map=variable_map)
+    ).to_dataset(
+        ds,
+        dim_map=dim_map,
+        variable_map=variable_map,
+        keep_global_attrs=keep_global_attrs,
+    )
