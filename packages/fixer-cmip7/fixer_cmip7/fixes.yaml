@@ -2,3 +2,13 @@ MIP-DRS7.CMIP7.CMIP.CCCma.CanESM6-MR.historical.r2i1p1f1.glb.mon.tas.tavg-h2m-hx
   - function: fixer_cmip7.fixes.reformat
     realm: atmos
     branded_variable: tas_tavg-h2m-hxy-u
+    dim_map:
+      "lat": "y"
+      "lon": "x"
+      "bnds": "bounds"
+    variable_map:
+      "height": "height2m"
+      "lat_bnds": "lat_bounds"
+      "lon_bnds": "lon_bounds"
+      "time_bnds": "time_bounds"
+      "tas": "temp"

@@ -10,10 +10,8 @@ from fixer.protocol import FixFunction
 from fixer_cmip7.fixes import reformat
 
 
-def test_reformat() -> None:
-    """Test the reformat function on a small synthetic dataset."""
-    assert isinstance(reformat, FixFunction)
-    ds = xr.Dataset.from_dict(
+def create_test_dataset() -> xr.Dataset:
+    return xr.Dataset.from_dict(
         {
             "coords": {
                 "time": {
@@ -45,7 +43,7 @@ def test_reformat() -> None:
                         "bounds": "lat_bounds",
                         "units": "degrees_north",
                     },
-                    "data": [-87.86379883923263, -85.09652698831736],
+                    "data": [-85.09652698831736, -87.86379883923263],
                 },
                 "lon": {
                     "dims": ("x",),
@@ -98,8 +96,8 @@ def test_reformat() -> None:
                     "dims": ("y", "bounds"),
                     "attrs": {},
                     "data": [
-                        [-90.0, -86.48016291377499],
-                        [-86.48016291377499, -83.70471996810181],
+                        [-83.70471996810181, -86.48016291377499],
+                        [-86.48016291377499, -90.0],
                     ],
                 },
                 "lon_bounds": {
@@ -111,7 +109,7 @@ def test_reformat() -> None:
                         [4.21875, 7.03125],
                     ],
                 },
-                "tas": {
+                "temp": {
                     "dims": ("time", "y", "x"),
                     "attrs": {
                         "units": "degreeC",
@@ -134,6 +132,12 @@ def test_reformat() -> None:
             },
         },
     )
+
+
+def test_reformat() -> None:
+    """Test the reformat function on a small synthetic dataset."""
+    ds = create_test_dataset()
+    assert isinstance(reformat, FixFunction)
     print("Original:\n", ds)
     print("Converting..")
     result = reformat(
@@ -150,6 +154,7 @@ def test_reformat() -> None:
             "lat_bnds": "lat_bounds",
             "lon_bnds": "lon_bounds",
             "time_bnds": "time_bounds",
+            "tas": "temp",
         },
     )
     assert result is not ds

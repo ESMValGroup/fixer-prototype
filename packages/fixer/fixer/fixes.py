@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import cf_xarray.units  # noqa: F401 # Needed to support cf-units with pint
@@ -52,7 +52,10 @@ class CoordinateBounds:
     """Definition of a coordinate bounds variable."""
 
     name: str
+    """Name of the coordinate bounds variable."""
+
     dims: tuple[str, ...]
+    """Dimensions of the coordinate bounds variable."""
 
 
 @dataclass
@@ -60,17 +63,37 @@ class Coordinate:
     """Definition of a coordinate variable."""
 
     name: str
-    dtype: str | None
-    dims: tuple[str, ...] | None
-    attrs: dict[str, str] | None
-    bounds: CoordinateBounds | None
+    """Name of the coordinate variable."""
+
+    dtype: str | None = None
+    """Data type of the coordinate variable."""
+
+    dims: tuple[str, ...] = ()
+    """Dimensions of the coordinate variable."""
+
+    attrs: dict[str, str] = field(default_factory=dict)
+    """Attributes of the coordinate variable."""
+
+    bounds: CoordinateBounds | None = None
+    """Bounds of the coordinate variable."""
+
+    requirements: dict[str, str] = field(default_factory=dict)
+    """Additional requirements of the coordinate variable."""
 
     def _copy_time_encoding(
         self,
         src: xr.DataArray,
         tgt: xr.DataArray,
     ) -> None:
-        """Copy the time encoding from `src` to `tgt` if it exists."""
+        """Copy the time encoding, if it exists.
+
+        Parameters
+        ----------
+        src:
+            The source data array to copy from.
+        tgt:
+            The target data array to copy to.
+        """
         time_encoding_keys = ("units", "calendar", "dtype")
         if set(time_encoding_keys).issubset(src.encoding):
             for key in time_encoding_keys:
@@ -83,15 +106,31 @@ class Coordinate:
         dim_map: dict[str, str] | None = None,
         variable_map: dict[str, str] | None = None,
     ) -> xr.DataArray:
-        """Create a coordinate using the data from `ds`."""
+        """Create a standardized coordinate.
+
+        Parameters
+        ----------
+        ds:
+            The original dataset.
+        dim_map:
+            An optional mapping from the dimension names in the definition to
+            the dimension names in the resulting dataset.
+        variable_map:
+            An optional mapping from the variable names in the definition to
+            the variable names in the resulting dataset.
+
+        Returns
+        -------
+        :
+            The standardized coordinate variable as a data array.
+        """
+        dim_map = dim_map or {}
+        variable_map = variable_map or {}
         attrs = dict(self.attrs or {})
         if self.bounds:
             attrs["bounds"] = self.bounds.name
-        variable_map = variable_map or {}
         original_coord = ds[variable_map.get(self.name, self.name)]
-        if dim_map is None:
-            dim_map = {}
-        if self.dims is not None:
+        if self.dims and dim_map:
             order = [dim_map.get(d, d) for d in self.dims]
             data = original_coord.transpose(*order).data
         else:
@@ -118,16 +157,32 @@ class Coordinate:
         dim_map: dict[str, str] | None = None,
         variable_map: dict[str, str] | None = None,
     ) -> xr.DataArray | None:
-        """Create coordinate bounds using the data from `ds`."""
+        """Create standardized coordinate bounds.
+
+        Parameters
+        ----------
+        ds:
+            The original dataset.
+        dim_map:
+            An optional mapping from the dimension names in the definition to
+            the dimension names in the resulting dataset.
+        variable_map:
+            An optional mapping from the variable names in the definition to
+            the variable names in the resulting dataset.
+
+        Returns
+        -------
+        :
+            The standardized coordinate bounds as a data array.
+        """
         if not self.bounds:
             return None
+        dim_map = dim_map or {}
         variable_map = variable_map or {}
         original_coord = ds[variable_map.get(self.name, self.name)]
         original_bounds = ds[
             variable_map.get(self.bounds.name, self.bounds.name)
         ]
-        if dim_map is None:
-            dim_map = {}
         order = [dim_map.get(d, d) for d in self.bounds.dims]
         data = original_bounds.transpose(*order).data
         data = _convert_units(
@@ -151,10 +206,22 @@ class Variable:
     """Definition of a physical quantity."""
 
     name: str
-    dtype: str | None
-    dims: tuple[str, ...] | None
-    coords: tuple[Coordinate, ...] | None
-    attrs: dict[str, str] | None
+    """Name of the variable."""
+
+    dtype: str | None = None
+    """Data type of the variable."""
+
+    dims: tuple[str, ...] = ()
+    """Dimensions of the variable."""
+
+    coords: tuple[Coordinate, ...] = ()
+    """Coordinates associated with the variable."""
+
+    attrs: dict[str, str] = field(default_factory=dict)
+    """Attributes of the variable."""
+
+    requirements: dict[str, str] = field(default_factory=dict)
+    """Additional requirements of the coordinate variable."""
 
     def to_dataset(
         self,
@@ -162,17 +229,34 @@ class Variable:
         dim_map: dict[str, str] | None = None,
         variable_map: dict[str, str] | None = None,
     ) -> xr.Dataset:
-        """Create a dataset using the data from `ds`."""
+        """Create a standardized dataset.
+
+        Parameters
+        ----------
+        ds:
+            The original dataset.
+        dim_map:
+            An optional mapping from the dimension names in the definition to
+            the dimension names in the resulting dataset.
+        variable_map:
+            An optional mapping from the variable names in the definition to
+            the variable names in the resulting dataset.
+
+        Returns
+        -------
+        :
+            The standardized dataset.
+
+        """
+        dim_map = dim_map or {}
         variable_map = variable_map or {}
         attrs = self.attrs or {}
         original_var = ds[variable_map.get(self.name, self.name)]
-        if dim_map is None:
-            dim_map = {}
-        if self.dims is None:
-            data = original_var.data
-        else:
+        if self.dims and dim_map:
             order = [dim_map.get(d, d) for d in self.dims]
             data = original_var.transpose(*order).data
+        else:
+            data = original_var.data
         data = _convert_units(
             data,
             original_var.attrs.get("units"),
@@ -182,7 +266,7 @@ class Variable:
             data = data.astype(np.dtype(self.dtype))
         coords = {
             c.name: c.to_dataarray(ds, dim_map, variable_map)
-            for c in self.coords or ()
+            for c in self.coords
         }
         var = xr.DataArray(
             data=data,
@@ -193,7 +277,7 @@ class Variable:
         )
         bounds = {
             c.bounds.name: c.to_bounds_dataarray(ds, dim_map, variable_map)
-            for c in self.coords or ()
+            for c in self.coords
             if c.bounds is not None
         }
         return xr.Dataset({self.name: var} | bounds, coords=coords)

@@ -1,23 +1,25 @@
-"""Test some stuff."""
+"""Demonstrate how to apply fixes to a dataset."""
 
 # ruff: noqa: T201
-import xarray as xr
+
+from __future__ import annotations
+
 from fixer import fix
+from fixer_cmip7.tests.test_fixes import create_test_dataset
 
 
 def main() -> None:
-    """CMORize a file as an example."""
-    ds = xr.open_dataset(
-        "~/climate_data/CMIP6/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc",
-        chunks={"time": 100},
-    )
+    """CMORize a dataset as an example."""
+    ds = create_test_dataset()
     print("Original:\n", ds)
-    print("Converting..")
+    print()
+
+    print("Fixing..")
     result = fix(
         ds,
         name="MIP-DRS7.CMIP7.CMIP.CCCma.CanESM6-MR.historical.r2i1p1f1.glb.mon.tas.tavg-h2m-hxy-u.g13s.v20250622",
     )
-    print("Result:\n", result)
+    print("Fixed dataset:\n", result)
     print("Saving to NetCDF..")
     result.to_netcdf("tas_fixed.nc")
 
@@ -26,7 +28,7 @@ def main() -> None:
         import iris.loading  # noqa: PLC0415
     except ImportError:
         return
-
+    print("Loading with Iris..")
     cube = iris.load_cube("tas_fixed.nc")
     print(cube.summary())
     if iris.loading.LOAD_PROBLEMS.problems:
