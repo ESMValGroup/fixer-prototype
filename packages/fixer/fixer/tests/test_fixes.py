@@ -19,7 +19,8 @@ from fixer.fixes import (
 from fixer.protocol import FixFunction
 
 
-def test_reformat() -> None:
+@pytest.mark.parametrize("keep_global_attrs", [False, True])
+def test_reformat(*, keep_global_attrs: bool) -> None:
     """Test the reformat function on a small synthetic dataset."""
     assert isinstance(set_units, FixFunction)
     ds = xr.Dataset.from_dict(
@@ -72,7 +73,7 @@ def test_reformat() -> None:
                     "data": 2.0,
                 },
             },
-            "attrs": {},
+            "attrs": {"test_attr": "test_value"},
             "dims": {"time": 1, "bnds": 2, "y": 2, "x": 3},
             "data_vars": {
                 "time_bounds": {
@@ -222,6 +223,7 @@ def test_reformat() -> None:
             "lon_bnds": "lon_bounds",
             "time_bnds": "time_bounds",
         },
+        keep_global_attrs=keep_global_attrs,
     )
     assert result is not ds
     print("Result:\n", result)
@@ -240,6 +242,11 @@ def test_reformat() -> None:
     assert result.tas.dtype == np.dtype("float32")
     assert result.lat.dtype == np.dtype("float64")
     assert result.lat_bnds.dtype == np.dtype("float64")
+    if keep_global_attrs:
+        assert "test_attr" in result.attrs
+        assert result.attrs["test_attr"] == "test_value"
+    else:
+        assert not result.attrs
 
 
 @pytest.mark.parametrize(

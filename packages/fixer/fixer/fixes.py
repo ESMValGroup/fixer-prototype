@@ -228,6 +228,8 @@ class Variable:
         ds: xr.Dataset,
         dim_map: dict[str, str] | None = None,
         variable_map: dict[str, str] | None = None,
+        *,
+        keep_global_attrs: bool = False,
     ) -> xr.Dataset:
         """Create a standardized dataset.
 
@@ -241,6 +243,8 @@ class Variable:
         variable_map:
             An optional mapping from the variable names in the definition to
             the variable names in the resulting dataset.
+        keep_global_attrs:
+            Whether to keep the global attributes.
 
         Returns
         -------
@@ -280,7 +284,10 @@ class Variable:
             for c in self.coords
             if c.bounds is not None
         }
-        return xr.Dataset({self.name: var} | bounds, coords=coords)
+        result = xr.Dataset({self.name: var} | bounds, coords=coords)
+        if keep_global_attrs:
+            result.attrs = dict(ds.attrs)
+        return result
 
 
 def set_global_attrs(
