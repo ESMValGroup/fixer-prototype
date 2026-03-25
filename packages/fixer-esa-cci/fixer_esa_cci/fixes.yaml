@@ -97,3 +97,21 @@ esacci.WATERVAPOUR.mon.L3S.TCWV.multi-sensor.multi-platform.TCWV_land_05deg.3-2.
     keep_global_attrs: true
   - function: fixer.fixes.flip_coordinate
     name: lat
+ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-1982-2016-fv3.0.zarr:
+  - function: fixer.fixes.insert_missing_time_points
+    freq: MS
+  - function: fixer.fixes.add_time_bounds
+    bounds_dim: bnds
+    freq: MS
+  - function: fixer.fixes.guess_bounds
+    coordinates: [lat, lon]
+    bounds_dim: bnds
+  - function: fixer_cmip7.fixes.reformat
+    realm: atmos
+    branded_variable: clt_tavg-u-hxy-u
+    variable_map:
+      clt: cfc
+      time_bnds: time_bounds
+      lat_bnds: lat_bounds
+      lon_bnds: lon_bounds
+    keep_global_attrs: true

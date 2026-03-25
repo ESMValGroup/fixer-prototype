@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 import cf_xarray.units  # noqa: F401 # Needed to support cf-units with pint
 import numpy as np
+import pandas as pd
 import pint
 import xarray as xr
 
@@ -421,6 +422,129 @@ def flip_coordinate(ds: xr.Dataset, name: str) -> xr.Dataset:
         ds[coord.attrs["bounds"]] = bounds.isel({bounds_dim: reverse})
 
     return ds
+
+
+def guess_bounds(
+    ds: xr.Dataset,
+    coordinates: Iterable[str],
+    dim: str | Iterable[str] | None = None,
+    bounds_dim: str = "bounds",
+) -> xr.Dataset:
+    """Guess the bounds of coordinate variables.
+
+    Parameters
+    ----------
+    ds:
+        The original dataset.
+    coordinates:
+        The names of the coordinate variables to guess the bounds for.
+    dim:
+        Core dimension(s) along which to estimate bounds. For 2D bounds, it can
+        be a list of 2 dimension names.
+    bounds_dim:
+        The name of the bounds dimension to add.
+
+    Returns
+    -------
+    :
+        A copy of the original dataset, with the guessed bounds added.
+    """
+    return ds.cf.add_bounds(coordinates, dim=dim, output_dim=bounds_dim)
+
+
+def add_time_bounds(
+    ds: xr.Dataset,
+    freq: str,
+    dim: str = "time",
+    bounds_dim: str = "bounds",
+) -> xr.Dataset:
+    """Add time bounds to a dataset.
+
+    Parameters
+    ----------
+    ds:
+        The original dataset.
+    freq:
+        The frequency string to use for generating the time bounds.
+    dim:
+        The name of the time dimension.
+    bounds_dim:
+        The name of the bounds dimension to add.
+
+    Returns
+    -------
+    :
+        A copy of the original dataset, with the time bounds added.
+    """
+    ds = ds.copy()
+    coord = ds[dim]
+    intervals = pd.interval_range(
+        coord.data[0],
+        freq=freq,
+        periods=len(coord.data),
+    )
+    if len(intervals) != len(coord.data):
+        msg = (
+            f"Unable to add time bounds with frequency '{freq}' to dimension "
+            f"'{dim}' because the number of generated bounds "
+            f"({len(intervals)}) does not match the number of existing time "
+            f"points ({len(coord.data)})."
+        )
+        raise ValueError(msg)
+    inside = (coord.data >= intervals.left) & (coord.data <= intervals.right)
+    if not inside.all():
+        msg = (
+            f"Unable to add time bounds with frequency '{freq}' to dimension "
+            f"'{dim}' because the existing time points are not inside the "
+            f"generated bounds at {coord.data[np.where(~inside)]}."
+        )
+        raise ValueError(msg)
+
+    name = f"{dim}_bounds"
+    bounds = xr.DataArray(
+        data=[intervals.left, intervals.right],
+        dims=(bounds_dim, dim),
+        name=name,
+    ).transpose(dim, bounds_dim)
+    ds[name] = bounds
+    coord.attrs["bounds"] = name
+    return ds
+
+
+def insert_missing_time_points(
+    ds: xr.Dataset,
+    freq: str,
+    dim: str = "time",
+) -> xr.Dataset:
+    """Insert missing data along a dimension.
+
+    Parameters
+    ----------
+    ds:
+        The original dataset.
+    freq:
+        The frequency string to use for generating the complete set of time
+        points. For example, "D" for daily data, "MS" for monthly data at the
+        start of the month, etc. See :func:`pandas.date_range` for available
+        options.
+    dim:
+        The name of the dimension along which to insert missing data.
+
+    Returns
+    -------
+    :
+        A copy of the original dataset, with missing data inserted along the
+        specified dimension.
+    """
+    return ds.reindex(
+        {
+            dim: pd.date_range(
+                ds[dim].data[0],
+                ds[dim].data[-1],
+                freq=freq,
+            ),
+        },
+    )
 
 
 def merge_dims(
